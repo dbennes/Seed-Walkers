@@ -15,7 +15,7 @@ async function authorize() {
     // Certifique-se de substituir o valor de `redirect_uri` pelo URL de redirecionamento registrado em seu projeto do Google Cloud Console
     codeChallengeMethod: 'S256',
     codeVerifier: '',
-    redirect_uri: 'http://localhost:3000/authorize',
+    redirect_uri: 'https://seed-walkers-git-main-dbennes.vercel.app/google',
     scope: SCOPES.join(' '),
   });
 
