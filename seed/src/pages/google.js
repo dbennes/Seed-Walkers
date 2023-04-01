@@ -1,27 +1,29 @@
-import React, { useState } from 'react';
-import { authorizeUser, getDataFromGoogleFit, renderData } from './googleFit';
+import googleAuth from './googleFit';
 
-function Google () {
-  const [data, setData] = useState(null);
+async function GetActivities() {
+  const oAuth2Client = await googleAuth.authorize();
 
-  function handleClick() {
-    authorizeUser();
-  }
+  const fitness = google.fitness('v1');
 
-  function renderGoogleFitData() {
-    if (data) {
-      return renderData(data);
-    } else {
-      return <p>Clique no botão para autorizar e obter os dados do Google Fit.</p>;
-    }
-  }
+  // Define a data de início e fim do período desejado
+  const startTimeMillis = new Date('2022-01-01').getTime();
+  const endTimeMillis = new Date('2022-01-31').getTime();
 
-  return (
-    <div>
-      <button onClick={handleClick}>Autorizar e obter dados do Google Fit</button>
-      {renderGoogleFitData()}
-    </div>
-  );
+  const response = await fitness.users.dataset.aggregate({
+    userId: 'me',
+    requestBody: {
+      aggregateBy: [{
+        dataTypeName: 'com.google.step_count.delta',
+      }],
+      endTimeMillis: endTimeMillis,
+      startTimeMillis: startTimeMillis,
+      bucketByTime: { durationMillis: 86400000 },
+    },
+    auth: oAuth2Client,
+  });
+
+  // Processa os dados da resposta da API do Google Fit
+  // e exibe as atividades do usuário
+  console.log(response.data);
 }
 
-export default Google;
